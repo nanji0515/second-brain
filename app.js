@@ -1,18 +1,4 @@
-// Simple markdown to HTML
-function md(text) {
-  return text
-    .replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-    .replace(/\n{2,}/g, '<br><br>')
-    .replace(/(?<!\n)\n(?!\n)/g, '\n');
-}
-
-// Fix nested lists
+// Markdown renderer
 function fixLists(html) {
   const lines = html.split('\n');
   let inList = false, result = [];
@@ -26,7 +12,7 @@ function fixLists(html) {
     }
   }
   if (inList) result.push('</ul>');
-  return result.join('\n').replace(/<ul><\/ul>/g, '');
+  return result.join('\n');
 }
 
 function renderMd(text) {
@@ -44,33 +30,41 @@ let currentCategory = 'all';
 let searchQuery = '';
 let openCards = new Set();
 
-// Build nav
-function buildNav() {
-  const nav = document.getElementById('nav');
-  const totalSections = CATEGORIES.reduce((s, c) => s + c.sections.length, 0);
-  let html = `<div class="nav-item ${currentCategory === 'all' ? 'active' : ''}" data-id="all">
-    <span class="emoji">📚</span><span>全部</span><span class="count">${totalSections}</span></div>`;
+// Init: default all cards open
+function initOpenCards() {
   for (const cat of CATEGORIES) {
-    html += `<div class="nav-item ${currentCategory === cat.id ? 'active' : ''}" data-id="${cat.id}">
-      <span class="emoji">${cat.emoji}</span><span>${cat.name}</span><span class="count">${cat.sections.length}</span></div>`;
+    for (const sec of cat.sections) {
+      openCards.add(cat.id + '-' + sec.title);
+    }
   }
-  nav.innerHTML = html;
-  nav.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => {
-      currentCategory = item.dataset.id;
-      buildNav(); renderContent(); closeSidebar();
+}
+initOpenCards();
+
+// Build tabs
+function buildTabs() {
+  const tabs = document.getElementById('tabs');
+  const total = CATEGORIES.reduce((s, c) => s + c.sections.length, 0);
+  let html = `<div class="tab ${currentCategory === 'all' ? 'active' : ''}" data-id="all">📚 全部 <span class="count">${total}</span></div>`;
+  for (const cat of CATEGORIES) {
+    html += `<div class="tab ${currentCategory === cat.id ? 'active' : ''}" data-id="${cat.id}">${cat.emoji} ${cat.name} <span class="count">${cat.sections.length}</span></div>`;
+  }
+  tabs.innerHTML = html;
+  tabs.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      currentCategory = tab.dataset.id;
+      buildTabs(); renderContent();
     });
   });
 }
 
-// Highlight search matches
+// Highlight
 function highlight(text, query) {
   if (!query) return text;
   const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark>$1</mark>');
 }
 
-// Render content
+// Render
 function renderContent() {
   const content = document.getElementById('content');
   let cats = currentCategory === 'all' ? CATEGORIES : CATEGORIES.filter(c => c.id === currentCategory);
@@ -85,7 +79,7 @@ function renderContent() {
       if (!matchTitle && !matchContent) continue;
       hasResults = true;
       const cardId = cat.id + '-' + sec.title;
-      const isOpen = openCards.has(cardId) || !!searchQuery;
+      const isOpen = openCards.has(cardId);
       const titleHtml = highlight(sec.title, searchQuery);
       const bodyHtml = searchQuery ? highlight(renderMd(sec.content), searchQuery) : renderMd(sec.content);
       catHtml += `<div class="card" data-card="${cardId}">
@@ -93,15 +87,14 @@ function renderContent() {
         <div class="card-body ${isOpen ? 'open' : ''}">${bodyHtml}</div></div>`;
     }
     if (catHtml) {
-      html += `<div class="category-title">${cat.emoji} ${cat.name}</div>${catHtml}`;
+      html += `<div class="category-header">${cat.emoji} ${cat.name}</div>${catHtml}`;
     }
   }
   if (!hasResults) {
-    html = `<div class="empty">🔍 没有找到匹配的知识</div>`;
+    html = `<div class="empty"><span class="emoji">🔍</span>没有找到匹配的知识</div>`;
   }
   content.innerHTML = html;
 
-  // Card toggle
   content.querySelectorAll('.card-header').forEach(header => {
     header.addEventListener('click', () => {
       const card = header.parentElement;
@@ -117,34 +110,49 @@ function renderContent() {
 }
 
 // Search
-document.getElementById('search').addEventListener('input', (e) => {
-  searchQuery = e.target.value.trim();
-  renderContent();
+const searchInput = document.getElementById('search');
+let searchTimer;
+searchInput.addEventListener('input', (e) => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchQuery = e.target.value.trim();
+    if (searchQuery) {
+      // Open all matching cards when searching
+      for (const cat of CATEGORIES) {
+        for (const sec of cat.sections) {
+          openCards.add(cat.id + '-' + sec.title);
+        }
+      }
+    }
+    renderContent();
+  }, 150);
 });
 
-// Theme toggle
+// Theme
 const themeToggle = document.getElementById('themeToggle');
 let isDark = localStorage.getItem('theme') !== 'light';
 function applyTheme() {
   document.body.classList.toggle('light', !isDark);
   themeToggle.textContent = isDark ? '🌙' : '☀️';
+  document.querySelector('meta[name="theme-color"]').content = isDark ? '#0f0f1a' : '#f5f5fa';
   localStorage.setItem('theme', isDark ? 'dark' : 'light');
 }
 applyTheme();
 themeToggle.addEventListener('click', () => { isDark = !isDark; applyTheme(); });
 
-// Mobile sidebar
-const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('overlay');
-const menuBtn = document.getElementById('menuBtn');
-function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
-menuBtn.addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('open'); });
-overlay.addEventListener('click', closeSidebar);
+// Back to top
+const backTop = document.getElementById('backTop');
+window.addEventListener('scroll', () => {
+  backTop.classList.toggle('show', window.scrollY > 300);
+});
+backTop.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 
-// Stats
+// Footer
 const totalSections = CATEGORIES.reduce((s, c) => s + c.sections.length, 0);
-document.getElementById('stats').textContent = `${totalSections} 条知识 · 更新于 ${LAST_UPDATED}`;
+document.getElementById('footer').textContent = `${totalSections} 条知识 · 更新于 ${LAST_UPDATED}`;
 
 // Init
-buildNav();
+buildTabs();
 renderContent();

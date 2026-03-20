@@ -12,26 +12,21 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h1>🧠 第二大脑</h1>
-            <button class="theme-toggle" id="themeToggle" title="切换主题">🌙</button>
-        </div>
-        <nav class="nav" id="nav"></nav>
-        <div class="sidebar-footer">
-            <span id="stats"></span>
-        </div>
-    </aside>
-    <main class="main">
-        <header class="topbar">
-            <button class="menu-btn" id="menuBtn">☰</button>
-            <div class="search-box">
-                <input type="search" id="search" placeholder="搜索知识..." autocomplete="off">
+    <header class="header">
+        <div class="header-top">
+            <h1><span>🧠</span>第二大脑</h1>
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle">🌙</button>
             </div>
-        </header>
-        <div class="content" id="content"></div>
-    </main>
-    <div class="overlay" id="overlay"></div>
+        </div>
+        <div class="search-wrap">
+            <input type="search" id="search" placeholder="🔍 搜索知识..." autocomplete="off">
+        </div>
+        <div class="tabs" id="tabs"></div>
+    </header>
+    <div class="content" id="content"></div>
+    <div class="footer" id="footer"></div>
+    <button class="back-top" id="backTop">↑</button>
     <script src="data.js"></script>
     <script src="app.js"></script>
     <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
