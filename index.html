@@ -8,25 +8,41 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0f0f1a">
+    <meta name="theme-color" content="#0a0a12">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="header">
-        <div class="header-top">
-            <h1><span>🧠</span>第二大脑</h1>
-            <div class="header-actions">
-                <button class="theme-toggle" id="themeToggle">🌙</button>
+    <!-- Ambient background -->
+    <div class="ambient">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <div class="app">
+        <div class="hero">
+            <div class="hero-icon">🧠</div>
+            <h1>第二大脑</h1>
+            <p>南极的知识库 · 由噗噗整理</p>
+        </div>
+
+        <div class="stats" id="stats"></div>
+
+        <div class="search-container">
+            <div class="search-box">
+                <input type="search" id="search" placeholder="搜索知识..." autocomplete="off">
             </div>
         </div>
-        <div class="search-wrap">
-            <input type="search" id="search" placeholder="🔍 搜索知识..." autocomplete="off">
-        </div>
-        <div class="tabs" id="tabs"></div>
-    </header>
-    <div class="content" id="content"></div>
-    <div class="footer" id="footer"></div>
+
+        <div class="tags" id="tags"></div>
+
+        <div id="content"></div>
+
+        <div class="footer" id="footer"></div>
+    </div>
+
     <button class="back-top" id="backTop">↑</button>
+
     <script src="data.js"></script>
     <script src="app.js"></script>
     <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
