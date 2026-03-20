@@ -36,6 +36,7 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',
 /* Hero */
 .hero { text-align:center; padding:48px 0 32px; }
 .hero-icon { font-size:56px; margin-bottom:12px; animation:pulse 2s ease-in-out infinite; display:inline-block; }
+.hero-icon .pixel-icon { width:64px; height:64px; color:var(--accent); image-rendering:pixelated; }
 @keyframes pulse { 0%,100%{transform:scale(1) rotate(0deg)} 25%{transform:scale(1.2) rotate(-5deg)} 50%{transform:scale(1.15) rotate(5deg)} 75%{transform:scale(1.2) rotate(-3deg)} }
 .hero h1 { font-size:32px; font-weight:800; letter-spacing:-1px; background:linear-gradient(135deg, var(--accent), var(--purple)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
 .hero p { color:var(--text2); font-size:14px; margin-top:6px; }
@@ -78,7 +79,11 @@ body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',
 .card[data-accent="orange"]::before { background:linear-gradient(90deg, #fb923c, #f97316); }
 
 .card-header { padding:20px 24px; cursor:pointer; display:flex; align-items:center; gap:14px; user-select:none; }
+.pixel-icon { image-rendering:pixelated; -ms-interpolation-mode:nearest-neighbor; }
 .card-emoji { font-size:24px; flex-shrink:0; width:44px; height:44px; display:flex; align-items:center; justify-content:center; background:var(--glow); border-radius:12px; }
+.card-emoji .pixel-icon { width:24px; height:24px; }
+.tag .pixel-icon { width:16px; height:16px; vertical-align:middle; }
+.section-title .pixel-icon { width:18px; height:18px; vertical-align:middle; }
 .card-title-wrap { flex:1; min-width:0; }
 .card-title { font-size:16px; font-weight:700; letter-spacing:-0.3px; }
 .card-category { font-size:12px; color:var(--text3); margin-top:2px; }

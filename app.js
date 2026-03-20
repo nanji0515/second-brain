@@ -1,19 +1,31 @@
-// Category colors
+// Category pixel icon mapping
+const CAT_ICONS = {
+  'dev-tools': 'wrench',
+  'ai-automation': 'robot',
+  'image-processing': 'crosshair',
+  'mobile-dev': 'phone',
+  'travel': 'plane'
+};
+
+// Section pixel icon mapping
+const SEC_ICONS = {
+  'Claude Code': 'robot', 'GitHub Pages 部署': 'rocket', 'Android APK 打包（Cordova）': 'box',
+  'GitHub Spec Kit（规格驱动开发）': 'puzzle', 'OpenClaw Cron 监控': 'clock', 'Skill 制作': 'puzzle',
+  '截图中定位 UI 元素': 'crosshair', '已有 Skill': 'gear',
+  'PWA 改造要点': 'lightning', 'iOS 安装方式': 'apple', 'Android 安装方式': 'robot',
+  '北京 → 伦敦机票': 'plane', '比价注意事项': 'coin', '2026 国庆英国行': 'flag'
+};
+
+function icon(name, cls) {
+  return PIXEL_ICONS[name] || '';
+}
+
 const CAT_COLORS = {
   'dev-tools': 'green',
   'ai-automation': 'purple',
   'image-processing': 'blue',
   'mobile-dev': 'pink',
   'travel': 'orange'
-};
-
-// Section emojis (per knowledge card)
-const SEC_EMOJIS = {
-  'Claude Code': '🤖', 'GitHub Pages 部署': '🚀', 'Android APK 打包（Cordova）': '📦',
-  'GitHub Spec Kit（规格驱动开发）': '📋', 'OpenClaw Cron 监控': '⏰', 'Skill 制作': '🧩',
-  '截图中定位 UI 元素': '🎯', '已有 Skill': '🔧',
-  'PWA 改造要点': '⚡', 'iOS 安装方式': '🍎', 'Android 安装方式': '🤖',
-  '北京 → 伦敦机票': '✈️', '比价注意事项': '💰', '2026 国庆英国行': '🇬🇧'
 };
 
 // Markdown
@@ -69,10 +81,11 @@ function renderStats() {
 function buildTags() {
   const tags = document.getElementById('tags');
   const total = CATEGORIES.reduce((s, c) => s + c.sections.length, 0);
-  let html = `<div class="tag ${currentCategory === 'all' ? 'active' : ''}" data-id="all" data-color="all">📚 全部 <span class="badge">${total}</span></div>`;
+  let html = `<div class="tag ${currentCategory === 'all' ? 'active' : ''}" data-id="all" data-color="all">${PIXEL_ICONS.book} 全部 <span class="badge">${total}</span></div>`;
   for (const cat of CATEGORIES) {
     const color = CAT_COLORS[cat.id] || 'green';
-    html += `<div class="tag ${currentCategory === cat.id ? 'active' : ''}" data-id="${cat.id}" data-color="${color}">${cat.emoji} ${cat.name} <span class="badge">${cat.sections.length}</span></div>`;
+    const catIcon = PIXEL_ICONS[CAT_ICONS[cat.id]] || cat.emoji;
+    html += `<div class="tag ${currentCategory === cat.id ? 'active' : ''}" data-id="${cat.id}" data-color="${color}">${catIcon} ${cat.name} <span class="badge">${cat.sections.length}</span></div>`;
   }
   tags.innerHTML = html;
   tags.querySelectorAll('.tag').forEach(tag => {
@@ -108,12 +121,12 @@ function renderContent() {
       hasResults = true;
       const cardId = cat.id + '-' + sec.title;
       const isOpen = openCards.has(cardId);
-      const emoji = SEC_EMOJIS[sec.title] || cat.emoji;
+      const secIcon = PIXEL_ICONS[SEC_ICONS[sec.title]] || PIXEL_ICONS[CAT_ICONS[cat.id]] || cat.emoji;
       const titleHtml = highlight(sec.title, searchQuery);
       const bodyHtml = searchQuery ? highlight(renderMd(sec.content), searchQuery) : renderMd(sec.content);
       catHtml += `<div class="card" data-card="${cardId}" data-accent="${color}" style="animation-delay:${delay}ms">
         <div class="card-header">
-          <div class="card-emoji">${emoji}</div>
+          <div class="card-emoji">${secIcon}</div>
           <div class="card-title-wrap">
             <div class="card-title">${titleHtml}</div>
             <div class="card-category">${cat.name}</div>
@@ -125,7 +138,7 @@ function renderContent() {
       delay += 30;
     }
     if (catHtml) {
-      html += `<div class="section"><div class="section-title">${cat.emoji} ${cat.name}</div>${catHtml}</div>`;
+      html += `<div class="section"><div class="section-title">${PIXEL_ICONS[CAT_ICONS[cat.id]] || cat.emoji} ${cat.name}</div>${catHtml}</div>`;
     }
   }
   if (!hasResults) {
@@ -183,6 +196,7 @@ const total = CATEGORIES.reduce((s, c) => s + c.sections.length, 0);
 document.getElementById('footer').textContent = `🧠 ${total} 条知识 · 更新于 ${LAST_UPDATED} · 由噗噗整理`;
 
 // Init
+document.getElementById('heroIcon').innerHTML = PIXEL_ICONS.brain;
 renderStats();
 buildTags();
 renderContent();
