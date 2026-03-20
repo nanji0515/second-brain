@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>第二大脑</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f0f1a">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1>🧠 第二大脑</h1>
+            <button class="theme-toggle" id="themeToggle" title="切换主题">🌙</button>
+        </div>
+        <nav class="nav" id="nav"></nav>
+        <div class="sidebar-footer">
+            <span id="stats"></span>
+        </div>
+    </aside>
+    <main class="main">
+        <header class="topbar">
+            <button class="menu-btn" id="menuBtn">☰</button>
+            <div class="search-box">
+                <input type="search" id="search" placeholder="搜索知识..." autocomplete="off">
+            </div>
+        </header>
+        <div class="content" id="content"></div>
+    </main>
+    <div class="overlay" id="overlay"></div>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');</script>
+</body>
+</html>
